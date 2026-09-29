@@ -7,10 +7,9 @@
     <title>Discord Text Spoof Generator</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;900&family=Pacifico&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -18,1128 +17,505 @@
                 extend: {
                     colors: {
                         discord: {
-                            dark: '#1e1f22',
-                            panel: '#2b2d31',
-                            chat: '#313338',
-                            hover: '#35373c',
-                            blurple: '#5865f2',
-                            'blurple-hover': '#4752c4',
-                            green: '#23a55a',
-                            yellow: '#f0b232',
-                            'mention-bg': '#3d3521',
-                            text: '#dbdee1',
-                            muted: '#949ba4',
-                            heading: '#f2f3f5'
+                            bg: '#1c1d23',        /* User requested background */
+                            text: '#c7c8ce',      /* User requested text */
+                            sidebar: '#141519',   /* Slightly darker for panels */
+                            accent: '#5865f2',    /* Blurple */
+                            yellow: '#f0b232',    /* Mention yellow */
+                            border: '#2b2d31'
                         }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'gg sans', 'Whitney', 'Helvetica Neue', 'sans-serif'],
-                        mono: ['Fira Code', 'monospace'],
-                        arcade: ['"Press Start 2P"', 'monospace'],
-                        cursive: ['Pacifico', 'cursive'],
-                        horror: ['Creepster', 'cursive'],
-                        display: ['Montserrat', 'sans-serif']
                     }
                 }
             }
         }
     </script>
     <style>
-        /* Custom scrollbars matching Discord */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #2b2d31;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1a1b1e;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #111214;
-        }
-        /* Transparency Checkerboard Pattern */
-        .checkerboard-bg {
-            background-color: #2b2d31;
-            background-image: 
-                linear-gradient(45deg, #232428 25%, transparent 25%), 
-                linear-gradient(-45deg, #232428 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #232428 75%), 
-                linear-gradient(-45deg, transparent 75%, #232428 75%);
-            background-size: 16px 16px;
-            background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
-        }
-        /* Custom styled sliders */
-        input[type=range] {
-            -webkit-appearance: none;
-            background: #1e1f22;
-            height: 6px;
-            border-radius: 3px;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 16px;
-            width: 16px;
-            border-radius: 50%;
-            background: #5865f2;
-            cursor: pointer;
-            transition: transform 0.1s ease;
-        }
-        input[type=range]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-            background: #7983f5;
-        }
-        /* Custom Color Input styling */
-        input[type="color"] {
-            -webkit-appearance: none;
-            border: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            cursor: pointer;
-            padding: 0;
-            overflow: hidden;
-        }
-        input[type="color"]::-webkit-color-swatch-wrapper {
-            padding: 0;
-        }
-        input[type="color"]::-webkit-color-swatch {
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 6px;
-        }
+        body { font-family: 'Inter', -apple-system, sans-serif; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #141519; }
+        ::-webkit-scrollbar-thumb { background: #2b2d31; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f4147; }
+        
+        .tab-active { border-color: #5865f2 !important; color: #ffffff !important; }
+        
+        /* Custom Checkbox */
+        .spoof-checkbox:checked + div { background-color: #5865f2; border-color: #5865f2; }
+        .spoof-checkbox:checked + div svg { display: block; }
     </style>
 </head>
-<body class="bg-discord-dark text-discord-text font-sans antialiased min-h-screen flex flex-col selection:bg-discord-blurple selection:text-white">
+<body class="bg-black text-discord-text min-h-screen flex flex-col selection:bg-discord-accent selection:text-white">
 
-    <!-- Application Header -->
-    <header class="bg-discord-panel border-b border-[#1f2023] px-4 py-3 sticky top-0 z-50 flex flex-wrap items-center justify-between gap-4 shadow-md">
-        <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl bg-discord-blurple flex items-center justify-center text-white shadow-lg shadow-discord-blurple/20">
-                <svg class="w-6 h-6 fill-current" viewBox="0 0 127.14 96.36">
-                    <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c2.64-27.38-4.51-51.11-18.91-72.15ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74c6.51,0,11.66,5.77,11.43,12.74C53.88,60,48.8,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74c6.43,0,11.6,5.77,11.43,12.74C96.12,60,91.08,65.69,84.69,65.69Z"/>
-                </svg>
+    <!-- Header -->
+    <header class="bg-discord-sidebar border-b border-discord-border px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-discord-accent flex items-center justify-center text-white shadow-lg shadow-discord-accent/20">
+                <i class="fa-solid fa-ghost text-xl"></i>
             </div>
             <div>
-                <h1 class="font-bold text-discord-heading text-lg leading-tight flex items-center gap-2">
-                    Discord Text Spoof Generator
-                    <span class="text-xs bg-discord-blurple/20 text-discord-blurple px-2 py-0.5 rounded-full font-medium border border-discord-blurple/30">v2.0</span>
-                </h1>
-                <p class="text-xs text-discord-muted">Bypass mobile formatting limits with pixel-perfect custom text images</p>
+                <h1 class="font-bold text-white tracking-wide text-lg leading-tight">Discord Text Spoof Generator</h1>
+                <p class="text-xs text-gray-400">Anti-Scale Mobile Bypass & FX Toolkit</p>
             </div>
         </div>
-
-        <div class="flex items-center gap-2">
-            <!-- Preset Selector Dropdown -->
-            <div class="relative">
-                <select id="presetSelect" class="bg-discord-chat text-xs text-discord-heading px-3 py-2 rounded-lg border border-white/10 hover:border-discord-blurple focus:outline-none focus:border-discord-blurple cursor-pointer font-medium transition">
-                    <option value="" disabled selected>✨ Load Visual Preset...</option>
-                    <option value="default">💬 Classic Discord Chat Text</option>
-                    <option value="mention">🔔 Fake Mention Highlight</option>
-                    <option value="cyberpunk">⚡ Cyberpunk RGB Glitch</option>
-                    <option value="gold">🏆 Gold Foil Luxury</option>
-                    <option value="rainbow">🌈 Neon Rainbow Wave</option>
-                    <option value="arcade">👾 Retro Arcade Pixel</option>
-                    <option value="horror">🩸 Horror Blood Red</option>
-                    <option value="oled">🖤 OLED Midnight Stealth</option>
-                </select>
-            </div>
-
-            <!-- Reset Button -->
-            <button id="resetBtn" title="Reset to default settings" class="bg-discord-chat hover:bg-discord-hover text-discord-muted hover:text-discord-heading p-2 rounded-lg border border-white/10 transition flex items-center gap-1.5 text-xs font-medium">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                <span class="hidden sm:inline">Reset</span>
+        <div class="flex gap-3">
+            <button onclick="copyToClipboard()" class="bg-discord-accent hover:bg-[#4752c4] text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2">
+                <i class="fa-regular fa-copy"></i> Copy Image
+            </button>
+            <button onclick="downloadImage()" class="bg-discord-border hover:bg-[#3f4147] text-white px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2">
+                <i class="fa-solid fa-download"></i> Download PNG
             </button>
         </div>
     </header>
 
-    <!-- Main Content Grid -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-
-        <!-- LEFT COLUMN: Controls & Settings Panel -->
-        <section class="lg:col-span-6 xl:col-span-5 flex flex-col gap-4">
-
-            <!-- Control Tabs Bar -->
-            <div class="flex bg-discord-panel p-1 rounded-xl border border-white/5 space-x-1 text-xs font-semibold overflow-x-auto">
-                <button data-tab="tab-text" class="tab-btn flex-1 py-2 px-3 rounded-lg bg-discord-blurple text-white shadow transition flex items-center justify-center gap-1.5 whitespace-nowrap">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                    Text & Font
-                </button>
-                <button data-tab="tab-fill" class="tab-btn flex-1 py-2 px-3 rounded-lg text-discord-muted hover:text-discord-heading hover:bg-discord-hover transition flex items-center justify-center gap-1.5 whitespace-nowrap">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
-                    Fill & Color
-                </button>
-                <button data-tab="tab-effects" class="tab-btn flex-1 py-2 px-3 rounded-lg text-discord-muted hover:text-discord-heading hover:bg-discord-hover transition flex items-center justify-center gap-1.5 whitespace-nowrap">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    Effects & FX
-                </button>
-                <button data-tab="tab-canvas" class="tab-btn flex-1 py-2 px-3 rounded-lg text-discord-muted hover:text-discord-heading hover:bg-discord-hover transition flex items-center justify-center gap-1.5 whitespace-nowrap">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 002-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    Canvas & Mention
-                </button>
-            </div>
-
-            <!-- TAB 1: TEXT & TYPOGRAPHY -->
-            <div id="tab-text" class="tab-content bg-discord-panel p-4 rounded-xl border border-white/5 space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-discord-muted uppercase tracking-wider mb-2">Message Text</label>
-                    <textarea id="textInput" rows="3" class="w-full bg-discord-chat text-discord-heading p-3 rounded-lg border border-white/10 focus:outline-none focus:border-discord-blurple text-sm font-sans placeholder-discord-muted resize-y" placeholder="Type your text shenanigans here...">This looks like regular Discord chat text... but it's actually an illusion image! 😈</textarea>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-discord-muted uppercase tracking-wider mb-2">Font Family</label>
-                        <select id="fontFamily" class="w-full bg-discord-chat text-discord-heading px-3 py-2 rounded-lg border border-white/10 text-xs focus:outline-none focus:border-discord-blurple">
-                            <option value="gg sans, sans-serif">💬 gg sans / Whitney (Discord Native)</option>
-                            <option value="Inter, sans-serif">Inter (Clean Modern)</option>
-                            <option value="Montserrat, sans-serif">Montserrat (Bold Display)</option>
-                            <option value="'Fira Code', monospace">Fira Code (Developer Mono)</option>
-                            <option value="'Press Start 2P', monospace">Press Start 2P (Retro Arcade)</option>
-                            <option value="Creepster, cursive">Creepster (Spooky Horror)</option>
-                            <option value="Pacifico, cursive">Pacifico (Handwritten Cursive)</option>
-                            <option value="Impact, sans-serif">Impact (Meme Style)</option>
-                            <option value="custom">📁 Custom Font Upload...</option>
-                        </select>
+    <main class="flex-1 max-w-[1600px] w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Panel: Controls -->
+        <section class="lg:col-span-7 flex flex-col gap-6">
+            
+            <div class="bg-discord-sidebar rounded-xl border border-discord-border shadow-md overflow-hidden">
+                <div class="p-5 border-b border-discord-border">
+                    <h2 class="text-white font-bold mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-keyboard text-discord-accent"></i> Core Content & Typography
+                    </h2>
+                    
+                    <!-- Text Input -->
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Spoof Message</label>
+                        <textarea id="ctrl-text" rows="3" class="w-full bg-[#111214] border border-discord-border focus:border-discord-accent rounded-lg p-3 text-sm text-white outline-none resize-y transition" placeholder="Type your message here..." oninput="renderCanvas()">This text is an image.
+It bypasses formatting limits!</textarea>
                     </div>
 
-                    <!-- Custom Font Upload (Hidden by default) -->
-                    <div id="customFontContainer" class="hidden col-span-2">
-                        <label class="block text-xs font-bold text-discord-muted uppercase tracking-wider mb-1">Upload Font File (.ttf, .otf, .woff)</label>
-                        <input type="file" id="fontFileInput" accept=".ttf,.otf,.woff,.woff2" class="w-full text-xs text-discord-muted file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-discord-blurple file:text-white hover:file:bg-discord-blurple-hover cursor-pointer">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-discord-muted uppercase tracking-wider mb-2">Font Weight</label>
-                        <select id="fontWeight" class="w-full bg-discord-chat text-discord-heading px-3 py-2 rounded-lg border border-white/10 text-xs focus:outline-none focus:border-discord-blurple">
-                            <option value="normal">Normal (400)</option>
-                            <option value="500">Medium (500)</option>
-                            <option value="600">Semi-Bold (600)</option>
-                            <option value="bold" selected>Bold (700)</option>
-                            <option value="900">Black Heavy (900)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Font Size & Line Height Sliders -->
-                <div class="space-y-3 pt-2 border-t border-white/5">
-                    <div>
-                        <div class="flex justify-between text-xs mb-1">
-                            <span class="font-semibold text-discord-muted">Font Size</span>
-                            <span id="fontSizeVal" class="text-discord-heading font-mono">16px</span>
-                        </div>
-                        <input type="range" id="fontSize" min="10" max="72" value="16" class="w-full">
-                    </div>
-
-                    <div>
-                        <div class="flex justify-between text-xs mb-1">
-                            <span class="font-semibold text-discord-muted">Line Height Spacing</span>
-                            <span id="lineHeightVal" class="text-discord-heading font-mono">1.38</span>
-                        </div>
-                        <input type="range" id="lineHeight" min="0.8" max="2.5" step="0.05" value="1.38" class="w-full">
-                    </div>
-
-                    <div>
-                        <div class="flex justify-between text-xs mb-1">
-                            <span class="font-semibold text-discord-muted">Letter Spacing</span>
-                            <span id="letterSpacingVal" class="text-discord-heading font-mono">0px</span>
-                        </div>
-                        <input type="range" id="letterSpacing" min="-3" max="15" step="0.5" value="0" class="w-full">
-                    </div>
-                </div>
-
-                <!-- Alignment -->
-                <div>
-                    <label class="block text-xs font-bold text-discord-muted uppercase tracking-wider mb-2">Text Alignment</label>
-                    <div class="grid grid-cols-3 gap-2">
-                        <button type="button" data-align="left" class="align-btn py-1.5 rounded-lg bg-discord-blurple text-white text-xs font-medium flex justify-center items-center gap-1">Left</button>
-                        <button type="button" data-align="center" class="align-btn py-1.5 rounded-lg bg-discord-chat text-discord-muted hover:text-white text-xs font-medium flex justify-center items-center gap-1">Center</button>
-                        <button type="button" data-align="right" class="align-btn py-1.5 rounded-lg bg-discord-chat text-discord-muted hover:text-white text-xs font-medium flex justify-center items-center gap-1">Right</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 2: FILL & COLOR -->
-            <div id="tab-fill" class="tab-content hidden bg-discord-panel p-4 rounded-xl border border-white/5 space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-discord-muted uppercase tracking-wider mb-2">Text Fill Type</label>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                        <button type="button" data-filltype="solid" class="filltype-btn py-2 rounded-lg bg-discord-blurple text-white text-xs font-medium">Solid Color</button>
-                        <button type="button" data-filltype="linear" class="filltype-btn py-2 rounded-lg bg-discord-chat text-discord-muted hover:text-white text-xs font-medium">Linear Grad</button>
-                        <button type="button" data-filltype="radial" class="filltype-btn py-2 rounded-lg bg-discord-chat text-discord-muted hover:text-white text-xs font-medium">Radial Grad</button>
-                        <button type="button" data-filltype="image" class="filltype-btn py-2 rounded-lg bg-discord-chat text-discord-muted hover:text-white text-xs font-medium">Image Mask 🖼️</button>
-                    </div>
-                </div>
-
-                <!-- Solid Color Controls -->
-                <div id="solidColorGroup" class="space-y-2">
-                    <label class="block text-xs font-bold text-discord-muted uppercase tracking-wider">Solid Text Color</label>
-                    <div class="flex items-center gap-3 bg-discord-chat p-2 rounded-lg border border-white/10">
-                        <input type="color" id="textSolidColor" value="#dbdee1">
-                        <input type="text" id="textSolidColorHex" value="#dbdee1" class="bg-transparent font-mono text-xs text-discord-heading focus:outline-none uppercase w-24">
-                        <span class="text-xs text-discord-muted ml-auto">Default: #dbdee1</span>
-                    </div>
-                </div>
-
-                <!-- Gradient Controls -->
-                <div id="gradientGroup" class="hidden space-y-3">
-                    <label class="block text-xs font-bold text-discord-muted uppercase tracking-wider">Gradient Stops</label>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div class="bg-discord-chat p-2 rounded-lg border border-white/10 flex flex-col items-center gap-1">
-                            <span class="text-[10px] text-discord-muted font-bold">STOP 1</span>
-                            <input type="color" id="gradStop1" value="#5865f2">
-                        </div>
-                        <div class="bg-discord-chat p-2 rounded-lg border border-white/10 flex flex-col items-center gap-1">
-                            <span class="text-[10px] text-discord-muted font-bold">STOP 2</span>
-                            <input type="color" id="gradStop2" value="#eb459e">
-                        </div>
-                        <div class="bg-discord-chat p-2 rounded-lg border border-white/10 flex flex-col items-center gap-1">
-                            <span class="text-[10px] text-discord-muted font-bold">STOP 3</span>
-                            <input type="color" id="gradStop3" value="#fee75c">
-                        </div>
-                    </div>
-
-                    <div id="gradAngleContainer">
-                        <div class="flex justify-between text-xs mb-1">
-                            <span class="font-semibold text-discord-muted">Gradient Angle</span>
-                            <span id="gradAngleVal" class="text-discord-heading font-mono">90°</span>
-                        </div>
-                        <input type="range" id="gradAngle" min="0" max="360" value="90" class="w-full">
-                    </div>
-                </div>
-
-                <!-- Image Mask Upload Controls -->
-                <div id="imageMaskGroup" class="hidden space-y-3">
-                    <label class="block text-xs font-bold text-discord-muted uppercase tracking-wider">Texture Clip / Letter Image Mask</label>
-                    <p class="text-xs text-discord-muted">Upload an image texture that will be cut out directly inside the letters!</p>
-                    <input type="file" id="textureFileInput" accept="image/*" class="w-full text-xs text-discord-muted file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-discord-blurple file:text-white hover:file:bg-discord-blurple-hover cursor-pointer bg-discord-chat p-2 rounded-lg border border-white/10">
-                </div>
-            </div>
-
-            <!-- TAB 3: EFFECTS & GLITCH -->
-            <div id="tab-effects" class="tab-content hidden bg-discord-panel p-4 rounded-xl border border-white/5 space-y-4">
-                
-                <!-- Outline / Stroke Section -->
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <label class="text-xs font-bold text-discord-muted uppercase tracking-wider">Text Outline / Stroke</label>
-                        <input type="checkbox" id="strokeToggle" class="w-4 h-4 rounded bg-discord-chat border-white/10 text-discord-blurple focus:ring-0 cursor-pointer">
-                    </div>
-                    <div id="strokeControls" class="opacity-50 pointer-events-none space-y-3 pt-1">
-                        <div class="flex items-center justify-between bg-discord-chat p-2 rounded-lg border border-white/10">
-                            <span class="text-xs text-discord-heading font-medium">Outline Color</span>
-                            <input type="color" id="strokeColor" value="#000000">
+                    <!-- Font Upload & Size -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Custom Font (.ttf/.otf)</label>
+                            <label class="flex items-center justify-center w-full bg-[#111214] hover:bg-discord-border border border-discord-border text-gray-300 px-4 py-2 rounded-lg cursor-pointer transition text-sm">
+                                <i class="fa-solid fa-file-arrow-up mr-2 text-discord-accent"></i>
+                                <span id="font-upload-label">Upload Font File</span>
+                                <input type="file" id="ctrl-font-file" accept=".ttf,.otf,.woff" class="hidden" onchange="loadCustomFont(event)">
+                            </label>
                         </div>
                         <div>
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="font-semibold text-discord-muted">Outline Width</span>
-                                <span id="strokeWidthVal" class="text-discord-heading font-mono">2px</span>
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="text-xs font-bold text-gray-400 uppercase">Font Size</label>
+                                <span id="val-font-size" class="text-xs font-mono text-white">16px</span>
                             </div>
-                            <input type="range" id="strokeWidth" min="1" max="15" value="2" class="w-full">
+                            <input type="range" id="ctrl-font-size" min="10" max="100" value="16" class="w-full accent-discord-accent" oninput="renderCanvas()">
                         </div>
                     </div>
                 </div>
 
-                <!-- Glow / Drop Shadow Section -->
-                <div class="space-y-2 pt-3 border-t border-white/5">
-                    <div class="flex items-center justify-between">
-                        <label class="text-xs font-bold text-discord-muted uppercase tracking-wider">Glow / Drop Shadow</label>
-                        <input type="checkbox" id="shadowToggle" class="w-4 h-4 rounded bg-discord-chat border-white/10 text-discord-blurple focus:ring-0 cursor-pointer">
+                <div class="p-5 border-b border-discord-border bg-[#18191d]">
+                    <div class="flex items-start gap-3 mb-4">
+                        <i class="fa-solid fa-mobile-screen text-discord-accent text-xl"></i>
+                        <div>
+                            <h2 class="text-white font-bold">Anti-Scale Dimensions (Overhead)</h2>
+                            <p class="text-xs text-gray-400 mt-1">Discord mobile auto-stretches small images. Increase Overhead Width to create invisible padding, forcing the text to stay small.</p>
+                        </div>
                     </div>
-                    <div id="shadowControls" class="opacity-50 pointer-events-none space-y-3 pt-1">
-                        <div class="flex items-center justify-between bg-discord-chat p-2 rounded-lg border border-white/10">
-                            <span class="text-xs text-discord-heading font-medium">Shadow / Glow Color</span>
-                            <input type="color" id="shadowColor" value="#5865f2">
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="text-xs font-bold text-gray-400 uppercase">Overhead Width (X Pad)</label>
+                                <span id="val-pad-x" class="text-xs font-mono text-discord-accent font-bold">300px</span>
+                            </div>
+                            <input type="range" id="ctrl-pad-x" min="0" max="1000" value="300" step="10" class="w-full accent-discord-accent" oninput="renderCanvas()">
                         </div>
                         <div>
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="font-semibold text-discord-muted">Blur Radius</span>
-                                <span id="shadowBlurVal" class="text-discord-heading font-mono">8px</span>
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="text-xs font-bold text-gray-400 uppercase">Overhead Height (Y Pad)</label>
+                                <span id="val-pad-y" class="text-xs font-mono text-white">16px</span>
                             </div>
-                            <input type="range" id="shadowBlur" min="0" max="30" value="8" class="w-full">
+                            <input type="range" id="ctrl-pad-y" min="0" max="500" value="16" step="2" class="w-full accent-discord-accent" oninput="renderCanvas()">
                         </div>
-                        <div class="grid grid-cols-2 gap-2">
+                    </div>
+                </div>
+
+                <div class="p-5">
+                    <h2 class="text-white font-bold mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-discord-accent"></i> Visual Shenanigans & FX
+                    </h2>
+                    
+                    <!-- Color Pickers -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-[#111214] border border-discord-border rounded-lg p-3 flex items-center justify-between">
+                            <span class="text-sm font-semibold text-gray-300">Background Hex</span>
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="ctrl-bg-hex" value="#1c1d23" class="w-20 bg-transparent border-none text-right font-mono text-sm text-white outline-none uppercase" oninput="syncColorInput('bg', this.value)">
+                                <input type="color" id="ctrl-bg-color" value="#1c1d23" class="w-8 h-8 rounded cursor-pointer bg-transparent border-0" oninput="syncColorHex('bg', this.value)">
+                            </div>
+                        </div>
+                        <div class="bg-[#111214] border border-discord-border rounded-lg p-3 flex items-center justify-between">
+                            <span class="text-sm font-semibold text-gray-300">Text Hex</span>
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="ctrl-text-hex" value="#c7c8ce" class="w-20 bg-transparent border-none text-right font-mono text-sm text-white outline-none uppercase" oninput="syncColorInput('text', this.value)">
+                                <input type="color" id="ctrl-text-color" value="#c7c8ce" class="w-8 h-8 rounded cursor-pointer bg-transparent border-0" oninput="syncColorHex('text', this.value)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fill Mode Selector -->
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Text Fill Override Mode</label>
+                        <div class="flex bg-[#111214] p-1 rounded-lg border border-discord-border">
+                            <button onclick="setFillMode('solid')" id="btn-fill-solid" class="flex-1 py-1.5 text-xs font-bold rounded bg-discord-accent text-white transition">Solid</button>
+                            <button onclick="setFillMode('gradient')" id="btn-fill-gradient" class="flex-1 py-1.5 text-xs font-bold rounded text-gray-400 hover:text-white transition">Gradient</button>
+                            <button onclick="setFillMode('texture')" id="btn-fill-texture" class="flex-1 py-1.5 text-xs font-bold rounded text-gray-400 hover:text-white transition">Image Mask</button>
+                        </div>
+                    </div>
+
+                    <!-- Gradient Controls (Hidden by default) -->
+                    <div id="panel-gradient" class="hidden mb-4 bg-[#111214] border border-discord-border rounded-lg p-3 grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[10px] text-gray-400 uppercase block mb-1">Color 1</label>
+                            <input type="color" id="ctrl-grad-1" value="#ff0080" class="w-full h-8 rounded cursor-pointer bg-transparent" oninput="renderCanvas()">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-gray-400 uppercase block mb-1">Color 2</label>
+                            <input type="color" id="ctrl-grad-2" value="#7928ca" class="w-full h-8 rounded cursor-pointer bg-transparent" oninput="renderCanvas()">
+                        </div>
+                    </div>
+
+                    <!-- Texture Controls (Hidden by default) -->
+                    <div id="panel-texture" class="hidden mb-4 bg-[#111214] border border-discord-border rounded-lg p-3">
+                        <label class="flex items-center justify-center w-full bg-discord-border hover:bg-[#3f4147] text-white px-4 py-3 rounded-lg cursor-pointer transition text-sm border border-dashed border-gray-500">
+                            <i class="fa-regular fa-image mr-2 text-discord-accent"></i>
+                            <span id="texture-upload-label">Upload Image to Fill Text</span>
+                            <input type="file" id="ctrl-texture-file" accept="image/*" class="hidden" onchange="loadTexture(event)">
+                        </label>
+                    </div>
+
+                    <!-- Toggles: Mention & Glitch -->
+                    <div class="space-y-3 mt-4 pt-4 border-t border-discord-border">
+                        <label class="flex items-center justify-between p-3 bg-[#111214] border border-discord-border rounded-lg cursor-pointer group">
                             <div>
-                                <div class="flex justify-between text-xs mb-1">
-                                    <span class="font-semibold text-discord-muted">Offset X</span>
-                                    <span id="shadowOffsetXVal" class="text-discord-heading font-mono">0px</span>
-                                </div>
-                                <input type="range" id="shadowOffsetX" min="-20" max="20" value="0" class="w-full">
+                                <span class="font-bold text-discord-yellow text-sm block">Fake @Mention Overlay</span>
+                                <span class="text-xs text-gray-500">Adds the yellow background tint and left border.</span>
                             </div>
+                            <div class="relative flex items-center">
+                                <input type="checkbox" id="ctrl-mention" class="sr-only spoof-checkbox" onchange="renderCanvas()">
+                                <div class="w-6 h-6 border-2 border-gray-500 rounded flex items-center justify-center transition group-hover:border-discord-accent">
+                                    <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="flex items-center justify-between p-3 bg-[#111214] border border-discord-border rounded-lg cursor-pointer group">
                             <div>
-                                <div class="flex justify-between text-xs mb-1">
-                                    <span class="font-semibold text-discord-muted">Offset Y</span>
-                                    <span id="shadowOffsetYVal" class="text-discord-heading font-mono">2px</span>
+                                <span class="font-bold text-red-400 text-sm block">RGB Chromatic Glitch</span>
+                                <span class="text-xs text-gray-500">Splits red and cyan channels horizontally.</span>
+                            </div>
+                            <div class="relative flex items-center gap-4">
+                                <input type="range" id="ctrl-glitch-offset" min="1" max="15" value="3" class="w-24 accent-red-400" oninput="if(document.getElementById('ctrl-glitch').checked) renderCanvas()">
+                                <input type="checkbox" id="ctrl-glitch" class="sr-only spoof-checkbox" onchange="renderCanvas()">
+                                <div class="w-6 h-6 border-2 border-gray-500 rounded flex items-center justify-center transition group-hover:border-red-400">
+                                    <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                                 </div>
-                                <input type="range" id="shadowOffsetY" min="-20" max="20" value="2" class="w-full">
                             </div>
-                        </div>
+                        </label>
                     </div>
-                </div>
 
-                <!-- RGB Glitch / Chromatic Aberration Section -->
-                <div class="space-y-2 pt-3 border-t border-white/5">
-                    <div class="flex items-center justify-between">
-                        <label class="text-xs font-bold text-discord-muted uppercase tracking-wider">RGB Chromatic Glitch Split ⚡</label>
-                        <input type="checkbox" id="glitchToggle" class="w-4 h-4 rounded bg-discord-chat border-white/10 text-discord-blurple focus:ring-0 cursor-pointer">
-                    </div>
-                    <div id="glitchControls" class="opacity-50 pointer-events-none space-y-3 pt-1">
-                        <div>
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="font-semibold text-discord-muted">Glitch Split Distance</span>
-                                <span id="glitchAmountVal" class="text-discord-heading font-mono">3px</span>
-                            </div>
-                            <input type="range" id="glitchAmount" min="1" max="12" value="3" class="w-full">
-                        </div>
-                    </div>
                 </div>
-
             </div>
-
-            <!-- TAB 4: CANVAS & MENTION -->
-            <div id="tab-canvas" class="tab-content hidden bg-discord-panel p-4 rounded-xl border border-white/5 space-y-4">
-                
-                <div>
-                    <label class="block text-xs font-bold text-discord-muted uppercase tracking-wider mb-2">Canvas Background Presets</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button type="button" data-bg="#313338" class="bgpreset-btn p-2 rounded-lg bg-[#313338] text-white text-xs border border-white/10 hover:border-discord-blurple font-medium flex items-center justify-between">
-                            <span>Discord Dark</span>
-                            <span class="w-3 h-3 rounded-full bg-[#313338] border border-white/40"></span>
-                        </button>
-                        <button type="button" data-bg="#000000" class="bgpreset-btn p-2 rounded-lg bg-[#000000] text-white text-xs border border-white/10 hover:border-discord-blurple font-medium flex items-center justify-between">
-                            <span>OLED Midnight</span>
-                            <span class="w-3 h-3 rounded-full bg-black border border-white/40"></span>
-                        </button>
-                        <button type="button" data-bg="#ffffff" class="bgpreset-btn p-2 rounded-lg bg-[#ffffff] text-black text-xs border border-white/10 hover:border-discord-blurple font-medium flex items-center justify-between">
-                            <span>Discord Light</span>
-                            <span class="w-3 h-3 rounded-full bg-white border border-black/40"></span>
-                        </button>
-                        <button type="button" data-bg="transparent" class="bgpreset-btn p-2 rounded-lg bg-discord-chat text-white text-xs border border-white/10 hover:border-discord-blurple font-medium flex items-center justify-between">
-                            <span>Transparent (PNG)</span>
-                            <span class="w-3 h-3 rounded-full checkerboard-bg border border-white/40"></span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-between bg-discord-chat p-2 rounded-lg border border-white/10">
-                    <span class="text-xs text-discord-heading font-medium">Custom Background Hex</span>
-                    <input type="color" id="bgCustomColor" value="#313338">
-                </div>
-
-                <!-- Fake Discord Mention Highlight Card Mode -->
-                <div class="space-y-2 pt-3 border-t border-white/5">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <label class="text-xs font-bold text-discord-muted uppercase tracking-wider block">Fake Mention Highlight Bar 🔔</label>
-                            <span class="text-[11px] text-discord-muted">Adds left yellow stripe & mention overlay</span>
-                        </div>
-                        <input type="checkbox" id="mentionToggle" class="w-4 h-4 rounded bg-discord-chat border-white/10 text-discord-blurple focus:ring-0 cursor-pointer">
-                    </div>
-                </div>
-
-                <!-- Canvas Padding & Corners -->
-                <div class="space-y-3 pt-3 border-t border-white/5">
-                    <div>
-                        <div class="flex justify-between text-xs mb-1">
-                            <span class="font-semibold text-discord-muted">Horizontal Padding</span>
-                            <span id="paddingXVal" class="text-discord-heading font-mono">12px</span>
-                        </div>
-                        <input type="range" id="paddingX" min="4" max="50" value="12" class="w-full">
-                    </div>
-                    <div>
-                        <div class="flex justify-between text-xs mb-1">
-                            <span class="font-semibold text-discord-muted">Vertical Padding</span>
-                            <span id="paddingYVal" class="text-discord-heading font-mono">8px</span>
-                        </div>
-                        <input type="range" id="paddingY" min="4" max="50" value="8" class="w-full">
-                    </div>
-                    <div>
-                        <div class="flex justify-between text-xs mb-1">
-                            <span class="font-semibold text-discord-muted">Corner Radius</span>
-                            <span id="borderRadiusVal" class="text-discord-heading font-mono">4px</span>
-                        </div>
-                        <input type="range" id="borderRadius" min="0" max="24" value="4" class="w-full">
-                    </div>
-                </div>
-
-            </div>
-
         </section>
 
-        <!-- RIGHT COLUMN: Live Canvas Preview & Context Simulator -->
-        <section class="lg:col-span-6 xl:col-span-7 flex flex-col gap-5 sticky top-20">
-
-            <!-- Generated Canvas Card -->
-            <div class="bg-discord-panel rounded-xl border border-white/10 shadow-2xl overflow-hidden flex flex-col">
-                
-                <!-- Card Header -->
-                <div class="bg-discord-dark/80 px-4 py-2.5 border-b border-white/5 flex items-center justify-between">
-                    <div class="flex items-center space-x-2">
-                        <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
-                        <span class="w-3 h-3 rounded-full bg-yellow-500 inline-block"></span>
-                        <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
-                        <span class="text-xs font-medium text-discord-muted ml-2">Rendered Output Canvas</span>
+        <!-- Right Panel: Live Preview -->
+        <section class="lg:col-span-5 flex flex-col gap-4">
+            <h2 class="text-gray-400 font-bold text-xs uppercase tracking-wider">Live Chat Simulator Preview</h2>
+            
+            <!-- Mock Discord Message Area -->
+            <div id="mock-chat-bg" class="bg-discord-bg rounded-xl border border-discord-border shadow-2xl overflow-hidden flex flex-col transition-colors duration-200">
+                <div class="p-5 flex items-start gap-4">
+                    <!-- Avatar -->
+                    <div class="w-10 h-10 rounded-full bg-discord-accent flex-shrink-0 flex items-center justify-center">
+                        <i class="fa-solid fa-user text-white"></i>
                     </div>
-                    <span id="canvasDimensions" class="text-[11px] font-mono text-discord-muted bg-discord-chat px-2 py-0.5 rounded">0 x 0 px</span>
-                </div>
-
-                <!-- Canvas Wrapper Container -->
-                <div class="p-6 checkerboard-bg flex items-center justify-center min-h-[160px] overflow-auto">
-                    <canvas id="outputCanvas" class="max-w-full h-auto rounded shadow-lg transition-all duration-150"></canvas>
-                </div>
-
-                <!-- Action Export Buttons -->
-                <div class="p-3 bg-discord-panel border-t border-white/5 flex flex-wrap gap-2 justify-end">
-                    <button id="copyImageBtn" class="flex-1 sm:flex-none bg-discord-blurple hover:bg-discord-blurple-hover text-white px-4 py-2 rounded-lg font-medium text-xs flex items-center justify-center gap-2 shadow transition active:scale-95">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
-                        <span>Copy Image to Clipboard</span>
-                    </button>
-
-                    <button id="downloadPngBtn" class="flex-1 sm:flex-none bg-discord-green hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium text-xs flex items-center justify-center gap-2 shadow transition active:scale-95">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                        <span>Download PNG</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Discord Chat Context Illusion Preview Section -->
-            <div class="bg-discord-panel rounded-xl border border-white/10 p-4 space-y-3">
-                <div class="flex items-center justify-between border-b border-white/5 pb-2">
-                    <h3 class="text-xs font-bold text-discord-heading uppercase tracking-wider flex items-center gap-2">
-                        <span>💬 Live Discord Chat Illusion Preview</span>
-                    </h3>
-                    <span class="text-[10px] text-discord-muted bg-discord-chat px-2 py-0.5 rounded">Exact Mobile/Desktop View</span>
-                </div>
-
-                <!-- Interactive Chat Customizer Controls -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-                    <div>
-                        <span class="text-[10px] text-discord-muted block">Username</span>
-                        <input type="text" id="chatUsername" value="Wumpus" class="w-full bg-discord-chat text-discord-heading px-2 py-1 rounded border border-white/10">
-                    </div>
-                    <div>
-                        <span class="text-[10px] text-discord-muted block">Role Color</span>
-                        <input type="color" id="chatRoleColor" value="#1abc9c" class="w-full h-7 rounded bg-discord-chat cursor-pointer">
-                    </div>
-                    <div>
-                        <span class="text-[10px] text-discord-muted block">Timestamp</span>
-                        <input type="text" id="chatTimestamp" value="Today at 4:20 PM" class="w-full bg-discord-chat text-discord-heading px-2 py-1 rounded border border-white/10">
-                    </div>
-                    <div class="flex items-center gap-2 pt-3">
-                        <input type="checkbox" id="chatBotBadge" checked class="w-3.5 h-3.5 rounded bg-discord-chat border-white/10 text-discord-blurple">
-                        <span class="text-[11px] text-discord-muted font-medium">BOT Tag</span>
-                    </div>
-                </div>
-
-                <!-- Simulated Discord Chat Box Container -->
-                <div id="discordMessageRow" class="bg-discord-chat p-4 rounded-lg flex items-start space-x-4 border border-white/5 transition-colors">
-                    <!-- User Avatar -->
-                    <img id="chatAvatar" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="w-10 h-10 rounded-full flex-shrink-0 object-cover">
-
-                    <!-- Message Body -->
+                    
                     <div class="flex-1 min-w-0">
-                        <div class="flex items-center space-x-2">
-                            <span id="previewUsername" class="font-medium text-sm hover:underline cursor-pointer" style="color: #1abc9c;">Wumpus</span>
-                            <span id="previewBotBadge" class="bg-discord-blurple text-[10px] text-white font-bold px-1 rounded uppercase tracking-wide">BOT</span>
-                            <span id="previewTimestamp" class="text-xs text-discord-muted">Today at 4:20 PM</span>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-bold text-white hover:underline cursor-pointer">Spoofer</span>
+                            <span class="text-xs text-gray-400">Today at 4:20 PM</span>
                         </div>
-
-                        <!-- Rendered Image embedded seamlessly into message text area -->
-                        <div class="mt-1 flex items-start">
-                            <img id="previewCanvasImg" src="" alt="Spoof Discord Text" class="max-w-full h-auto inline-block">
+                        
+                        <!-- The Output Image goes here! -->
+                        <div class="inline-block max-w-full overflow-hidden rounded">
+                            <img id="preview-image" src="" alt="Spoofed output will appear here" class="max-w-full block shadow-sm shadow-black/50 border border-white/5">
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Diagnostics -->
+            <div class="bg-discord-sidebar rounded-xl border border-discord-border p-4">
+                <div class="flex justify-between items-center text-sm mb-2">
+                    <span class="text-gray-400 font-bold">Image Resolution:</span>
+                    <span id="diag-res" class="text-white font-mono bg-[#111214] px-2 py-1 rounded">0 x 0</span>
+                </div>
+                <p id="diag-warning" class="text-xs text-discord-yellow hidden">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Canvas width is under 400px. Discord mobile might stretch this image. Increase Overhead Width to fix!
+                </p>
+                <p id="diag-safe" class="text-xs text-green-400">
+                    <i class="fa-solid fa-circle-check"></i> Canvas width is wide enough to prevent mobile stretching.
+                </p>
+            </div>
+            
+            <!-- Hidden Working Canvas -->
+            <canvas id="hidden-canvas" class="hidden"></canvas>
         </section>
-
     </main>
 
-    <!-- Toast Notification Banner -->
-    <div id="toast" class="fixed bottom-5 right-5 bg-discord-panel border border-discord-green text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
-        <div class="bg-discord-green p-1.5 rounded-lg text-white">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+    <!-- Custom Toast Notification (Replaces alerts) -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-discord-sidebar border-l-4 border-discord-accent text-white px-5 py-4 rounded shadow-2xl flex items-center gap-3 transform translate-y-[150%] opacity-0 transition-all duration-300 z-50">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-discord-accent text-xl"></i>
+        <div>
+            <h4 id="toast-title" class="font-bold text-sm">Action Complete</h4>
+            <p id="toast-msg" class="text-xs text-gray-400">The task was successful.</p>
         </div>
-        <span id="toastMsg" class="text-xs font-semibold">Image copied to clipboard!</span>
     </div>
 
     <script>
-        const state = {
-            text: "This looks like regular Discord chat text... but it's actually an illusion image! 😈",
-            fontFamily: "gg sans, sans-serif",
-            fontSize: 16,
-            fontWeight: "bold",
-            lineHeight: 1.38,
-            letterSpacing: 0,
-            textAlign: "left",
-            
-            fillType: "solid", // solid | linear | radial | image
-            solidColor: "#dbdee1",
-            gradStop1: "#5865f2",
-            gradStop2: "#eb459e",
-            gradStop3: "#fee75c",
-            gradAngle: 90,
-            textureImage: null,
-
-            strokeEnabled: false,
-            strokeColor: "#000000",
-            strokeWidth: 2,
-
-            shadowEnabled: false,
-            shadowColor: "#5865f2",
-            shadowBlur: 8,
-            shadowOffsetX: 0,
-            shadowOffsetY: 2,
-
-            glitchEnabled: false,
-            glitchAmount: 3,
-
-            bgColor: "#313338",
-            mentionEnabled: false,
-            paddingX: 12,
-            paddingY: 8,
-            borderRadius: 4
+        // --- State Variables ---
+        let state = {
+            customFontFamily: null,
+            textureImg: null,
+            fillMode: 'solid' // 'solid', 'gradient', 'texture'
         };
 
-        // DOM Elements
-        const canvas = document.getElementById('outputCanvas');
+        const canvas = document.getElementById('hidden-canvas');
         const ctx = canvas.getContext('2d');
-        const previewCanvasImg = document.getElementById('previewCanvasImg');
-        const canvasDimensions = document.getElementById('canvasDimensions');
+        const previewImg = document.getElementById('preview-image');
 
-        // Presets Definition
-        const PRESETS = {
-            default: {
-                text: "This looks like regular Discord chat text... but it's actually an illusion image! 😈",
-                fontFamily: "gg sans, sans-serif",
-                fontSize: 16,
-                fontWeight: "bold",
-                lineHeight: 1.38,
-                fillType: "solid",
-                solidColor: "#dbdee1",
-                strokeEnabled: false,
-                shadowEnabled: false,
-                glitchEnabled: false,
-                bgColor: "#313338",
-                mentionEnabled: false,
-                paddingX: 12,
-                paddingY: 8
-            },
-            mention: {
-                text: "@everyone Hey guys check out this weird custom ping message illusion!",
-                fontFamily: "gg sans, sans-serif",
-                fontSize: 16,
-                fontWeight: "bold",
-                fillType: "solid",
-                solidColor: "#ffffff",
-                bgColor: "#3d3521",
-                mentionEnabled: true,
-                paddingX: 14,
-                paddingY: 8
-            },
-            cyberpunk: {
-                text: "SYSTEM CORRUPTED :: DISCORD TEXT SPOOF PROTOCOL",
-                fontFamily: "'Fira Code', monospace",
-                fontSize: 18,
-                fontWeight: "bold",
-                fillType: "linear",
-                gradStop1: "#00f0ff",
-                gradStop2: "#ff0055",
-                gradStop3: "#ffe600",
-                gradAngle: 45,
-                glitchEnabled: true,
-                glitchAmount: 4,
-                bgColor: "#0a0a10",
-                mentionEnabled: false
-            },
-            gold: {
-                text: "✨ VIP VERIFIED PREMIUM MEMBER SYNTAX ✨",
-                fontFamily: "Montserrat, sans-serif",
-                fontSize: 20,
-                fontWeight: "900",
-                fillType: "linear",
-                gradStop1: "#bf953f",
-                gradStop2: "#fcf6ba",
-                gradStop3: "#b38728",
-                gradAngle: 120,
-                shadowEnabled: true,
-                shadowColor: "rgba(252, 246, 186, 0.4)",
-                shadowBlur: 10,
-                bgColor: "#141416",
-                mentionEnabled: false
-            },
-            rainbow: {
-                text: "🌈 Unlimited Custom Text Color Options on Discord Mobile!",
-                fontFamily: "gg sans, sans-serif",
-                fontSize: 18,
-                fontWeight: "bold",
-                fillType: "linear",
-                gradStop1: "#ff2a8d",
-                gradStop2: "#20e2d7",
-                gradStop3: "#f9d423",
-                gradAngle: 90,
-                bgColor: "#1e1f22",
-                mentionEnabled: false
-            },
-            arcade: {
-                text: "PRESS START TO SPOOF DISCORD CHAT",
-                fontFamily: "'Press Start 2P', monospace",
-                fontSize: 14,
-                fontWeight: "normal",
-                fillType: "solid",
-                solidColor: "#55ff55",
-                shadowEnabled: true,
-                shadowColor: "#00aa00",
-                shadowBlur: 12,
-                bgColor: "#000000",
-                paddingX: 16,
-                paddingY: 12
-            },
-            horror: {
-                text: "YOU CANNOT ESCAPE THE FORMATTING...",
-                fontFamily: "Creepster, cursive",
-                fontSize: 24,
-                fontWeight: "normal",
-                fillType: "solid",
-                solidColor: "#ff1111",
-                strokeEnabled: true,
-                strokeColor: "#330000",
-                strokeWidth: 3,
-                shadowEnabled: true,
-                shadowColor: "#aa0000",
-                shadowBlur: 15,
-                bgColor: "#050000"
-            },
-            oled: {
-                text: "Pure OLED Midnight Black Stealth Text Mode",
-                fontFamily: "gg sans, sans-serif",
-                fontSize: 16,
-                fontWeight: "normal",
-                fillType: "solid",
-                solidColor: "#e0e0e0",
-                bgColor: "#000000",
-                mentionEnabled: false
+        // --- UI Synchronization Handlers ---
+        function syncColorHex(type, val) {
+            document.getElementById(`ctrl-${type}-hex`).value = val;
+            if (type === 'bg') document.getElementById('mock-chat-bg').style.backgroundColor = val;
+            renderCanvas();
+        }
+        function syncColorInput(type, val) {
+            if (/^#[0-9A-F]{6}$/i.test(val)) {
+                document.getElementById(`ctrl-${type}-color`).value = val;
+                if (type === 'bg') document.getElementById('mock-chat-bg').style.backgroundColor = val;
+                renderCanvas();
             }
-        };
+        }
+        function setFillMode(mode) {
+            state.fillMode = mode;
+            ['solid', 'gradient', 'texture'].forEach(m => {
+                const btn = document.getElementById(`btn-fill-${m}`);
+                if (m === mode) {
+                    btn.className = 'flex-1 py-1.5 text-xs font-bold rounded bg-discord-accent text-white transition';
+                } else {
+                    btn.className = 'flex-1 py-1.5 text-xs font-bold rounded text-gray-400 hover:text-white transition';
+                }
+            });
 
+            document.getElementById('panel-gradient').style.display = mode === 'gradient' ? 'grid' : 'none';
+            document.getElementById('panel-texture').style.display = mode === 'texture' ? 'block' : 'none';
+            renderCanvas();
+        }
+
+        // --- Asset Loaders ---
+        async function loadCustomFont(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            try {
+                const buffer = await file.arrayBuffer();
+                const fontName = 'SpoofFont_' + Date.now();
+                const font = new FontFace(fontName, buffer);
+                await font.load();
+                document.fonts.add(font);
+                state.customFontFamily = fontName;
+                
+                document.getElementById('font-upload-label').textContent = file.name;
+                document.getElementById('font-upload-label').classList.add('text-discord-accent');
+                showToast('Font Loaded', `Successfully loaded custom font: ${file.name}`);
+                renderCanvas();
+            } catch (err) {
+                showToast('Font Error', 'Could not parse the font file.', true);
+            }
+        }
+
+        function loadTexture(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                const img = new Image();
+                img.onload = () => {
+                    state.textureImg = img;
+                    document.getElementById('texture-upload-label').textContent = file.name;
+                    document.getElementById('texture-upload-label').classList.add('text-discord-accent');
+                    setFillMode('texture'); // Auto-switch to texture mode
+                    showToast('Image Loaded', 'Texture applied to text fill.');
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // --- Core Rendering Logic ---
         function renderCanvas() {
-            // Split lines
-            const lines = state.text.split('\n');
+            // Read inputs
+            const textRaw = document.getElementById('ctrl-text').value;
+            const lines = textRaw.split('\n');
+            const fontSize = parseInt(document.getElementById('ctrl-font-size').value);
+            const padX = parseInt(document.getElementById('ctrl-pad-x').value);
+            const padY = parseInt(document.getElementById('ctrl-pad-y').value);
+            const bgColor = document.getElementById('ctrl-bg-color').value;
+            const textColor = document.getElementById('ctrl-text-color').value;
+            const hasMention = document.getElementById('ctrl-mention').checked;
+            const hasGlitch = document.getElementById('ctrl-glitch').checked;
+            const glitchOffset = parseInt(document.getElementById('ctrl-glitch-offset').value);
             
-            // Set font string for measurement
-            const fontStr = `${state.fontWeight} ${state.fontSize}px ${state.fontFamily}`;
-            ctx.font = fontStr;
+            // Update UI Labels
+            document.getElementById('val-font-size').textContent = `${fontSize}px`;
+            document.getElementById('val-pad-x').textContent = `${padX}px`;
+            document.getElementById('val-pad-y').textContent = `${padY}px`;
 
-            // Calculate metrics
-            const lineH = state.fontSize * state.lineHeight;
-            
-            // Calculate max width of lines
+            // Prepare Font
+            const fontFamily = state.customFontFamily ? `"${state.customFontFamily}"` : 'sans-serif';
+            const fontSpec = `bold ${fontSize}px ${fontFamily}`;
+            ctx.font = fontSpec;
+
+            // Measure Dimensions
             let maxLineWidth = 0;
             lines.forEach(line => {
-                const w = ctx.measureText(line).width + (line.length * state.letterSpacing);
+                const w = ctx.measureText(line).width;
                 if (w > maxLineWidth) maxLineWidth = w;
             });
 
-            // Calculate total dimensions
-            let extraLeftPadding = state.paddingX;
-            if (state.mentionEnabled) extraLeftPadding += 6; // Extra space for yellow mention bar
-
-            const totalWidth = Math.ceil(maxLineWidth + extraLeftPadding + state.paddingX);
-            const totalHeight = Math.ceil((lines.length * lineH) + (state.paddingY * 2));
-
-            // Adjust Canvas Size with Device Pixel Ratio for ultra sharp rendering
-            const dpr = window.devicePixelRatio || 1;
-            canvas.width = totalWidth * dpr;
-            canvas.height = totalHeight * dpr;
-            canvas.style.width = `${totalWidth}px`;
-            canvas.style.height = `${totalHeight}px`;
-
-            ctx.scale(dpr, dpr);
-
-            // Clear
-            ctx.clearRect(0, 0, totalWidth, totalHeight);
-
-            // Draw Background & Rounded Corners
-            if (state.bgColor !== 'transparent') {
-                ctx.save();
-                ctx.beginPath();
-                ctx.roundRect(0, 0, totalWidth, totalHeight, state.borderRadius);
-                ctx.fillStyle = state.bgColor;
-                ctx.fill();
-                ctx.restore();
-            }
-
-            // Draw Fake Mention Bar if enabled
-            if (state.mentionEnabled) {
-                ctx.save();
-                // Left Yellow Bar
-                ctx.fillStyle = "#f0b232";
-                ctx.fillRect(0, 0, 4, totalHeight);
-
-                // Semi-transparent overlay if custom bg not set
-                if (state.bgColor === '#313338' || state.bgColor === 'transparent') {
-                    ctx.fillStyle = "rgba(240, 178, 50, 0.1)";
-                    ctx.fillRect(4, 0, totalWidth - 4, totalHeight);
-                }
-                ctx.restore();
-            }
-
-            // Set up Text Styles
-            ctx.font = fontStr;
-            ctx.textBaseline = 'middle';
-
-            // Determine Fill Style
-            let fillStyle = state.solidColor;
-
-            if (state.fillType === 'linear') {
-                const angleRad = (state.gradAngle * Math.PI) / 180;
-                const x2 = Math.cos(angleRad) * totalWidth;
-                const y2 = Math.sin(angleRad) * totalHeight;
-                const grad = ctx.createLinearGradient(0, 0, x2, y2);
-                grad.addColorStop(0, state.gradStop1);
-                grad.addColorStop(0.5, state.gradStop2);
-                grad.addColorStop(1, state.gradStop3);
-                fillStyle = grad;
-            } else if (state.fillType === 'radial') {
-                const radGrad = ctx.createRadialGradient(totalWidth/2, totalHeight/2, 5, totalWidth/2, totalHeight/2, Math.max(totalWidth, totalHeight)/1.5);
-                radGrad.addColorStop(0, state.gradStop1);
-                radGrad.addColorStop(0.5, state.gradStop2);
-                radGrad.addColorStop(1, state.gradStop3);
-                fillStyle = radGrad;
-            } else if (state.fillType === 'image' && state.textureImage) {
-                const pattern = ctx.createPattern(state.textureImage, 'repeat');
-                fillStyle = pattern;
-            }
-
-            // Render Multi-line Text
-            lines.forEach((line, index) => {
-                const lineY = state.paddingY + (lineH * index) + (lineH / 2);
-                let lineX = extraLeftPadding;
-
-                const lineWidth = ctx.measureText(line).width;
-                if (state.textAlign === 'center') {
-                    lineX = (totalWidth - lineWidth) / 2;
-                } else if (state.textAlign === 'right') {
-                    lineX = totalWidth - state.paddingX - lineWidth;
-                }
-
-                // Apply Glitch Effect (draw cyan & red offset layers)
-                if (state.glitchEnabled) {
-                    ctx.save();
-                    ctx.fillStyle = "rgba(255, 0, 85, 0.8)";
-                    ctx.fillText(line, lineX - state.glitchAmount, lineY);
-                    ctx.fillStyle = "rgba(0, 240, 255, 0.8)";
-                    ctx.fillText(line, lineX + state.glitchAmount, lineY);
-                    ctx.restore();
-                }
-
-                // Apply Drop Shadow / Glow
-                if (state.shadowEnabled) {
-                    ctx.save();
-                    ctx.shadowColor = state.shadowColor;
-                    ctx.shadowBlur = state.shadowBlur;
-                    ctx.shadowOffsetX = state.shadowOffsetX;
-                    ctx.shadowOffsetY = state.shadowOffsetY;
-                    ctx.fillStyle = fillStyle;
-                    ctx.fillText(line, lineX, lineY);
-                    ctx.restore();
-                }
-
-                // Apply Outline / Stroke
-                if (state.strokeEnabled) {
-                    ctx.save();
-                    ctx.strokeStyle = state.strokeColor;
-                    ctx.lineWidth = state.strokeWidth;
-                    ctx.lineJoin = 'round';
-                    ctx.strokeText(line, lineX, lineY);
-                    ctx.restore();
-                }
-
-                // Final Main Fill Text
-                ctx.fillStyle = fillStyle;
-                ctx.fillText(line, lineX, lineY);
-            });
-
-            // Update Preview Image in Discord Chat Box
-            const dataUrl = canvas.toDataURL('image/png');
-            previewCanvasImg.src = dataUrl;
-            canvasDimensions.textContent = `${totalWidth} x ${totalHeight} px`;
-        }
-
-        // Tab Switcher Handler
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.tab-btn').forEach(b => {
-                    b.classList.remove('bg-discord-blurple', 'text-white');
-                    b.classList.add('text-discord-muted', 'hover:text-discord-heading', 'hover:bg-discord-hover');
-                });
-                btn.classList.add('bg-discord-blurple', 'text-white');
-                btn.classList.remove('text-discord-muted', 'hover:text-discord-heading', 'hover:bg-discord-hover');
-
-                const targetTab = btn.getAttribute('data-tab');
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-                document.getElementById(targetTab).classList.remove('hidden');
-            });
-        });
-
-        // Input Change Binders
-        document.getElementById('textInput').addEventListener('input', (e) => {
-            state.text = e.target.value;
-            renderCanvas();
-        });
-
-        document.getElementById('fontFamily').addEventListener('change', (e) => {
-            const val = e.target.value;
-            if (val === 'custom') {
-                document.getElementById('customFontContainer').classList.remove('hidden');
+            // Calculate Canvas Bounds with Overhead Padding
+            // Notice: text stays at origin (x=padX, y=padY), padding extends the right/bottom limits.
+            const lineHeight = fontSize * 1.25;
+            const contentWidth = maxLineWidth;
+            const contentHeight = lines.length * lineHeight;
+            
+            // Critical Anti-Scale Logic: Width incorporates padX on both left and right conceptually, 
+            // but for discord mobile, making the canvas strictly wider than the text works best.
+            canvas.width = Math.max(10, contentWidth + (padX * 2));
+            canvas.height = Math.max(10, contentHeight + (padY * 2));
+            
+            // Update Diagnostics
+            document.getElementById('diag-res').textContent = `${canvas.width} x ${canvas.height} px`;
+            if (canvas.width < 400) {
+                document.getElementById('diag-warning').classList.remove('hidden');
+                document.getElementById('diag-safe').classList.add('hidden');
             } else {
-                document.getElementById('customFontContainer').classList.add('hidden');
-                state.fontFamily = val;
-                renderCanvas();
+                document.getElementById('diag-warning').classList.add('hidden');
+                document.getElementById('diag-safe').classList.remove('hidden');
             }
-        });
 
-        // Custom Font Upload
-        document.getElementById('fontFileInput').addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const fontName = 'CustomFont_' + Date.now();
-            const arrayBuffer = await file.arrayBuffer();
-            const fontFace = new FontFace(fontName, arrayBuffer);
-            await fontFace.load();
-            document.fonts.add(fontFace);
-            state.fontFamily = fontName;
-            showToast(`Loaded custom font: ${file.name}`);
-            renderCanvas();
-        });
+            // Clear & Draw Background
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        document.getElementById('fontWeight').addEventListener('change', (e) => {
-            state.fontWeight = e.target.value;
-            renderCanvas();
-        });
-
-        // Sliders with Value Display
-        function bindSlider(id, stateKey, displayId, unit = 'px') {
-            const slider = document.getElementById(id);
-            const display = document.getElementById(displayId);
-            slider.addEventListener('input', (e) => {
-                state[stateKey] = parseFloat(e.target.value);
-                display.textContent = e.target.value + unit;
-                renderCanvas();
-            });
-        }
-
-        bindSlider('fontSize', 'fontSize', 'fontSizeVal', 'px');
-        bindSlider('lineHeight', 'lineHeight', 'lineHeightVal', '');
-        bindSlider('letterSpacing', 'letterSpacing', 'letterSpacingVal', 'px');
-        bindSlider('gradAngle', 'gradAngle', 'gradAngleVal', '°');
-        bindSlider('strokeWidth', 'strokeWidth', 'strokeWidthVal', 'px');
-        bindSlider('shadowBlur', 'shadowBlur', 'shadowBlurVal', 'px');
-        bindSlider('shadowOffsetX', 'shadowOffsetX', 'shadowOffsetXVal', 'px');
-        bindSlider('shadowOffsetY', 'shadowOffsetY', 'shadowOffsetYVal', 'px');
-        bindSlider('glitchAmount', 'glitchAmount', 'glitchAmountVal', 'px');
-        bindSlider('paddingX', 'paddingX', 'paddingXVal', 'px');
-        bindSlider('paddingY', 'paddingY', 'paddingYVal', 'px');
-        bindSlider('borderRadius', 'borderRadius', 'borderRadiusVal', 'px');
-
-        // Alignment Buttons
-        document.querySelectorAll('.align-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.align-btn').forEach(b => {
-                    b.classList.remove('bg-discord-blurple', 'text-white');
-                    b.classList.add('bg-discord-chat', 'text-discord-muted');
-                });
-                btn.classList.add('bg-discord-blurple', 'text-white');
-                btn.classList.remove('bg-discord-chat', 'text-discord-muted');
-                state.textAlign = btn.getAttribute('data-align');
-                renderCanvas();
-            });
-        });
-
-        // Fill Type Switcher
-        document.querySelectorAll('.filltype-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.filltype-btn').forEach(b => {
-                    b.classList.remove('bg-discord-blurple', 'text-white');
-                    b.classList.add('bg-discord-chat', 'text-discord-muted');
-                });
-                btn.classList.add('bg-discord-blurple', 'text-white');
-                btn.classList.remove('bg-discord-chat', 'text-discord-muted');
-
-                state.fillType = btn.getAttribute('data-filltype');
-
-                document.getElementById('solidColorGroup').classList.toggle('hidden', state.fillType !== 'solid');
-                document.getElementById('gradientGroup').classList.toggle('hidden', state.fillType !== 'linear' && state.fillType !== 'radial');
-                document.getElementById('imageMaskGroup').classList.toggle('hidden', state.fillType !== 'image');
-
-                renderCanvas();
-            });
-        });
-
-        // Color Pickers
-        document.getElementById('textSolidColor').addEventListener('input', (e) => {
-            state.solidColor = e.target.value;
-            document.getElementById('textSolidColorHex').value = e.target.value;
-            renderCanvas();
-        });
-        document.getElementById('textSolidColorHex').addEventListener('input', (e) => {
-            if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
-                state.solidColor = e.target.value;
-                document.getElementById('textSolidColor').value = e.target.value;
-                renderCanvas();
+            // Draw Fake Mention
+            if (hasMention) {
+                ctx.fillStyle = 'rgba(240, 178, 50, 0.1)'; // Discord Yellow Tint
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#f0b232'; // Solid Yellow Bar
+                ctx.fillRect(0, 0, 4, canvas.height);
             }
-        });
 
-        document.getElementById('gradStop1').addEventListener('input', (e) => { state.gradStop1 = e.target.value; renderCanvas(); });
-        document.getElementById('gradStop2').addEventListener('input', (e) => { state.gradStop2 = e.target.value; renderCanvas(); });
-        document.getElementById('gradStop3').addEventListener('input', (e) => { state.gradStop3 = e.target.value; renderCanvas(); });
+            // Setup Fill Style
+            ctx.textBaseline = 'top';
+            ctx.font = fontSpec;
+            let mainFillStyle = textColor;
+            
+            if (state.fillMode === 'gradient') {
+                const c1 = document.getElementById('ctrl-grad-1').value;
+                const c2 = document.getElementById('ctrl-grad-2').value;
+                const grad = ctx.createLinearGradient(padX, padY, padX + contentWidth, padY + contentHeight);
+                grad.addColorStop(0, c1);
+                grad.addColorStop(1, c2);
+                mainFillStyle = grad;
+            } else if (state.fillMode === 'texture' && state.textureImg) {
+                mainFillStyle = ctx.createPattern(state.textureImg, 'repeat');
+            }
 
-        // Texture File Upload
-        document.getElementById('textureFileInput').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const img = new Image();
-            img.onload = () => {
-                state.textureImage = img;
-                renderCanvas();
+            // Helper to draw multiline text
+            const drawTextLines = (offsetX, offsetY, color) => {
+                ctx.fillStyle = color;
+                lines.forEach((line, i) => {
+                    ctx.fillText(line, padX + offsetX, padY + (i * lineHeight) + offsetY);
+                });
             };
-            img.src = URL.createObjectURL(file);
-        });
 
-        // Checkbox Effect Toggles
-        function bindToggle(id, stateKey, controlsId) {
-            const toggle = document.getElementById(id);
-            const controls = document.getElementById(controlsId);
-            toggle.addEventListener('change', (e) => {
-                state[stateKey] = e.target.checked;
-                if (controls) {
-                    controls.classList.toggle('opacity-50', !e.target.checked);
-                    controls.classList.toggle('pointer-events-none', !e.target.checked);
-                }
-                renderCanvas();
-            });
-        }
-
-        bindToggle('strokeToggle', 'strokeEnabled', 'strokeControls');
-        bindToggle('shadowToggle', 'shadowEnabled', 'shadowControls');
-        bindToggle('glitchToggle', 'glitchEnabled', 'glitchControls');
-        bindToggle('mentionToggle', 'mentionEnabled', null);
-
-        document.getElementById('strokeColor').addEventListener('input', (e) => { state.strokeColor = e.target.value; renderCanvas(); });
-        document.getElementById('shadowColor').addEventListener('input', (e) => { state.shadowColor = e.target.value; renderCanvas(); });
-
-        // Background Preset Buttons
-        document.querySelectorAll('.bgpreset-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                state.bgColor = btn.getAttribute('data-bg');
-                renderCanvas();
-            });
-        });
-        document.getElementById('bgCustomColor').addEventListener('input', (e) => {
-            state.bgColor = e.target.value;
-            renderCanvas();
-        });
-
-        // Preset Loader
-        document.getElementById('presetSelect').addEventListener('change', (e) => {
-            const presetKey = e.target.value;
-            if (PRESETS[presetKey]) {
-                Object.assign(state, PRESETS[presetKey]);
-                syncUIWithState();
-                renderCanvas();
-                showToast(`Applied preset: ${presetKey.toUpperCase()}`);
+            // Draw Text
+            if (hasGlitch) {
+                // Red offset (left)
+                ctx.globalCompositeOperation = 'screen';
+                drawTextLines(-glitchOffset, 0, 'rgba(255, 0, 80, 0.9)');
+                // Cyan offset (right)
+                drawTextLines(glitchOffset, 0, 'rgba(0, 240, 255, 0.9)');
+                // Center / Main
+                ctx.globalCompositeOperation = 'source-over';
+                drawTextLines(0, 0, mainFillStyle);
+            } else {
+                drawTextLines(0, 0, mainFillStyle);
             }
-        });
 
-        document.getElementById('resetBtn').addEventListener('click', () => {
-            Object.assign(state, PRESETS.default);
-            syncUIWithState();
-            renderCanvas();
-            showToast("Reset to default Discord styling.");
-        });
-
-        function syncUIWithState() {
-            document.getElementById('textInput').value = state.text;
-            document.getElementById('fontFamily').value = state.fontFamily;
-            document.getElementById('fontSize').value = state.fontSize;
-            document.getElementById('fontSizeVal').textContent = state.fontSize + 'px';
-            document.getElementById('fontWeight').value = state.fontWeight;
-            document.getElementById('lineHeight').value = state.lineHeight;
-            document.getElementById('lineHeightVal').textContent = state.lineHeight;
-            document.getElementById('letterSpacing').value = state.letterSpacing;
-            document.getElementById('letterSpacingVal').textContent = state.letterSpacing + 'px';
-            document.getElementById('textSolidColor').value = state.solidColor;
-            document.getElementById('textSolidColorHex').value = state.solidColor;
-            document.getElementById('strokeToggle').checked = state.strokeEnabled;
-            document.getElementById('shadowToggle').checked = state.shadowEnabled;
-            document.getElementById('glitchToggle').checked = state.glitchEnabled;
-            document.getElementById('mentionToggle').checked = state.mentionEnabled;
-
-            document.getElementById('strokeControls').classList.toggle('opacity-50', !state.strokeEnabled);
-            document.getElementById('strokeControls').classList.toggle('pointer-events-none', !state.strokeEnabled);
-            document.getElementById('shadowControls').classList.toggle('opacity-50', !state.shadowEnabled);
-            document.getElementById('shadowControls').classList.toggle('pointer-events-none', !state.shadowEnabled);
-            document.getElementById('glitchControls').classList.toggle('opacity-50', !state.glitchEnabled);
-            document.getElementById('glitchControls').classList.toggle('pointer-events-none', !state.glitchEnabled);
+            // Update Preview Image
+            previewImg.src = canvas.toDataURL('image/png');
         }
 
-        // Discord Chat Simulator Controls Sync
-        document.getElementById('chatUsername').addEventListener('input', (e) => {
-            document.getElementById('previewUsername').textContent = e.target.value || 'Wumpus';
-        });
-        document.getElementById('chatRoleColor').addEventListener('input', (e) => {
-            document.getElementById('previewUsername').style.color = e.target.value;
-        });
-        document.getElementById('chatTimestamp').addEventListener('input', (e) => {
-            document.getElementById('previewTimestamp').textContent = e.target.value;
-        });
-        document.getElementById('chatBotBadge').addEventListener('change', (e) => {
-            document.getElementById('previewBotBadge').style.display = e.target.checked ? 'inline-block' : 'none';
-        });
-
-        // Copy Image to Clipboard
-        document.getElementById('copyImageBtn').addEventListener('click', async () => {
+        // --- Export Functions ---
+        async function copyToClipboard() {
             try {
                 canvas.toBlob(async (blob) => {
-                    if (!blob) return;
-                    const item = new ClipboardItem({ 'image/png': blob });
-                    await navigator.clipboard.write([item]);
-                    showToast("Copied image to clipboard! Ready to paste into Discord!");
-                });
+                    if (!blob) {
+                        showToast('Error', 'Failed to generate image blob.', true);
+                        return;
+                    }
+                    try {
+                        const item = new ClipboardItem({ 'image/png': blob });
+                        await navigator.clipboard.write([item]);
+                        showToast('Image Copied!', 'PNG is in your clipboard. Paste it into Discord.');
+                    } catch (e) {
+                        // Fallback mechanism (document.execCommand alternative or download)
+                        downloadImage();
+                        showToast('Clipboard Blocked', 'Downloaded file instead due to browser limits.', false);
+                    }
+                }, 'image/png');
             } catch (err) {
-                console.error("Clipboard write error: ", err);
-                showToast("Direct clipboard copy failed. Use Download PNG instead.");
+                showToast('Error', 'Clipboard API failed.', true);
             }
-        });
-
-        // Download PNG
-        document.getElementById('downloadPngBtn').addEventListener('click', () => {
-            const link = document.createElement('a');
-            link.download = 'discord-spoof-text.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            showToast("Downloaded PNG image successfully!");
-        });
-
-        // Toast Helper
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toastMsg');
-            toastMsg.textContent = message;
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-
-            setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-                toast.classList.remove('translate-y-0', 'opacity-100');
-            }, 3000);
         }
 
-        // Initialize on Window Load
-        window.onload = function() {
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.download = `spoof_msg_${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            showToast('Downloaded', 'Image saved to your device.');
+        }
+
+        // --- Custom UI Toast ---
+        function showToast(title, msg, isError = false) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-msg').textContent = msg;
+            
+            const icon = document.getElementById('toast-icon');
+            if (isError) {
+                toast.classList.replace('border-discord-accent', 'border-red-500');
+                icon.className = 'fa-solid fa-triangle-exclamation text-red-500 text-xl';
+            } else {
+                toast.classList.replace('border-red-500', 'border-discord-accent');
+                icon.className = 'fa-solid fa-circle-check text-discord-accent text-xl';
+            }
+
+            toast.classList.remove('translate-y-[150%]', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-[150%]', 'opacity-0');
+            }, 3500);
+        }
+
+        // --- Initialize ---
+        window.addEventListener('load', () => {
             renderCanvas();
-        };
+        });
     </script>
 </body>
 </html>
